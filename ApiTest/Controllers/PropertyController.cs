@@ -36,7 +36,7 @@ namespace ApiTest.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new { message = "Properties no encontradas", result = true });
+                return BadRequest(new { message = "Properties no encontradas", result = true });
             }
         }
         [HttpGet("{id}")]
@@ -52,10 +52,31 @@ namespace ApiTest.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(new { message = "Property no encontrada", result = true });
+                return BadRequest(new { message = "Property no encontrada", result = true });
             }
-        }        
-            
+        }
+
+        [HttpPost("Search")]
+        public async Task<IActionResult> SearchProperties([FromBody] FiltersDTO criteria)
+        {
+            try
+            {
+                if (criteria == null)
+                {
+                    return BadRequest(new { message = "El criterio de búsqueda no puede estar vacío.", result = false });
+                }
+                var property = await _propertyRepository.Search(criteria);
+                if (property != null && property.Count > 0)
+                    return Ok(new { message = "Properties encontradas por filtro", result = true, data = property });
+                else
+                    return Ok(new { message = "Properties no encontradas por filtro", result = true });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Properties no encontradas", result = true });
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post(PropertyDTO propertyDto)
         {

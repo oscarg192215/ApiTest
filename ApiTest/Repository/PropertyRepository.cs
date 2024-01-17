@@ -69,6 +69,47 @@ namespace ApiTest.Repository
             }
         }
 
+        public async Task<List<Property>> Search(FiltersDTO filter)
+        {
+            try
+            {
+
+                if (filter == null)
+                {
+                    return await _context.Property.Include(x => x.PropertyTrace).Include(x => x.PropertyImage).ToListAsync();
+                }
+
+                IQueryable<Property> query = _context.Property.Include(x => x.PropertyTrace).Include(x => x.PropertyImage);
+
+                    if (!string.IsNullOrEmpty(filter.name))
+                    {
+                        query = query.Where(p => p.Name.Contains(filter.name));
+                    }
+
+                    if (!string.IsNullOrEmpty(filter.codeInternal))
+                    {
+                        query = query.Where(p => p.CodeInternal.Contains(filter.codeInternal));
+                    }
+
+                    if (filter.price != 0)
+                    {
+                        query = query.Where(p => p.Price == filter.price);
+                    }
+
+                    if (filter.year != 0)
+                    {
+                        query = query.Where(p => p.Year == filter.year);
+                    }
+
+                return await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+
         public async Task UpdateProperty(Property property)
         {
             try

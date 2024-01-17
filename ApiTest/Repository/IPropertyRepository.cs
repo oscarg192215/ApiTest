@@ -10,5 +10,6 @@ namespace ApiTest.Repository
         Task AddProperty(Property property);
         Task UpdateProperty(Property property);
         Task DeleteProperty(int id);
+        Task<List<Property>> Search(FiltersDTO filters);
     }
 }
